@@ -1,0 +1,424 @@
+{
+	"schemaVersion": "1.0.0",
+	"imports": [
+	"js/aw-panel-body.directive",
+	"js/aw-panel-section.directive",
+	"js/aw-panel-footer.directive",
+	"js/aw-form.directive",
+	"js/aw-button.directive",
+	"js/aw-i18n.directive",
+	"js/aw-listbox.directive",
+	"js/aw-radiobutton.directive",
+	"js/aw-irdc-file-upload.directive",
+	"js/aw-xrt.directive",
+	"js/visible-when.directive"],
+	"actions": {
+		"reveal": {
+			"actionType": "TcSoaService",
+			"serviceName": "Workflow-2013-05-Workflow",
+			"method": "getWorkflowTemplates",
+			"inputData": {
+				"input": [{
+					"getFiltered": "{{function:isFetchFilteredTemplates}}",
+					"group": "{{ctx.userSession.props.group.uiValues[0]}}",
+					"objectTypes": ["DocumentRevision"]
+				}]
+			},
+			"policy": {
+				"types": [{
+					"name": "EPMTaskTemplate",
+					"properties": [{
+						"name": "template_name"
+					}]
+				}]
+			},
+			"outputData": {
+				"templatesInput": "templatesOutput[0].workflowTemplates"
+			},
+			"events": {
+				"success": [{
+					"name": "ShowCreateDocument.workflowTemplatesLoaded"
+				},
+				{
+					"name": "ShowCreateDocument.generateList"
+				}]
+			},
+			"deps": "js/AT4ShowCreateObjectService"
+		},
+		"convertToList": {
+			"actionType": "JSFunction",
+			"method": "createListModelObjects",
+			"inputData": {
+				"input": "{{data.templatesInput}}",
+				"propName": "props.template_name",
+				"addEmpty1stItem": true
+			},
+			"outputData": {
+				"templates": ""
+			},
+			"deps": "js/listBoxService"
+		},
+		"getWorkflowTemplates": {
+			"actionType": "TcSoaService",
+			"serviceName": "Workflow-2013-05-Workflow",
+			"method": "getWorkflowTemplates",
+			"inputData": {
+				"input": [{
+					"getFiltered": "{{function:getFiltered}}",
+					"group": "{{ctx.userSession.props.group.uiValues[0]}}",
+					"objectTypes": ["DocumentRevision"]
+				}]
+			},
+			"policy": {
+				"types": [{
+					"name": "EPMTaskTemplate",
+					"properties": [{
+						"name": "template_name"
+					}]
+				}]
+			},
+			"outputData": {
+				"templatesIn": "templatesOutput[0].workflowTemplates"
+			},
+			"events": {
+				"success": [{
+					"name": "ShowCreateDocument.generateListForAction"
+				}]
+			},
+			"deps": "js/AT4ShowCreateObjectService"
+		},
+		"convertToListForAction": {
+			"actionType": "JSFunction",
+			"method": "createListModelObjects",
+			"inputData": {
+				"input": "{{data.templatesIn}}",
+				"propName": "props.template_name",
+				"addEmpty1stItem": true
+			},
+			"outputData": {
+				"templates": ""
+			},
+			"deps": "js/listBoxService"
+		},
+		"initCreateIRDC": {
+			"actionType": "JSFunction",
+			"method": "initCreateIRDC",
+			"inputData": {
+				"data": "{{data}}"
+			},
+			"deps": "js/AT4ShowCreateObjectService"
+		},
+		"createObjectIRDC": {
+			"actionType": "TcSoaService",
+			"serviceName": "Core-2016-09-DataManagement",
+			"method": "createAttachAndSubmitObjects",
+			"inputData": {
+				"inputs": "{{function:getCreateInput}}"
+			},
+			"outputData": {
+				"createdMainObject": "output[0].objects[0]",
+				"createdObject": "{{function:getCreatedObject}}",
+				"datasetInfos": "{{function:getDatasets}}"
+			},
+			"policy": {
+				"types": [{
+					"name": "Dataset",
+					"properties": [{
+						"name": "object_name"
+					}]
+				}]
+			},
+			"events": {
+				"success": [{
+					"name": "ShowCreateDocument.objectCreated"
+				}],
+				"failure": [{
+					"name": "ShowCreateDocument.objectCreationFailed"
+				}]
+			},
+			"deps": "js/addObjectUtils"
+		},
+		"oldCreateObjectIRDC": {
+			"actionType": "TcSoaService",
+			"serviceName": "Internal-Core-2012-10-DataManagement",
+			"method": "createRelateAndSubmitObjects",
+			"inputData": {
+				"inputs": "{{function:getCreateInput}}"
+			},
+			"outputData": {
+				"createdMainObject": "output[0].objects[0]",
+				"createdObject": "{{function:getCreatedObject}}",
+				"datasetInfos": "{{function:getDatasets}}"
+			},
+			"events": {
+				"success": [{
+					"name": "ShowCreateDocument.objectCreated"
+				}],
+				"failure": [{
+					"name": "ShowCreateDocument.objectCreationFailed"
+				}]
+			},
+			"deps": "js/addObjectUtils"
+		},
+		"createObjectFailed": {
+			"actionType": "JSFunction",
+			"method": "createIRDCFailed",
+			"deps": "js/AT4ShowCreateObjectService"
+		},
+		"checkForFileUploads": {
+			"actionType": "JSFunction",
+			"method": "checkForFileUploads",
+			"inputData": {
+				"data": "{{data}}",
+				"fmsUrl": "{{Constants.fmsUrl}}"
+			},
+			"deps": "js/AT4ShowCreateObjectService"
+		},
+		"initNextUpload": {
+			"actionType": "JSFunction",
+			"method": "initNextUpload",
+			"inputData": {
+				"data": "{{data}}"
+			},
+			"deps": "js/AT4ShowCreateObjectService"
+		},
+		"uploadReady": {
+			"actionType": "Event",
+			"method": "Event",
+			"inputData": {
+				"events": [{
+					"name": "ShowCreateDocument.uploadFile"
+				}]
+			}
+		},
+		"uploadFile": {
+			"actionType": "RESTService",
+			"serviceName": "",
+			"method": "POST",
+			"inputData": {
+				"request": {
+					"method": "POST",
+					"url": "{{Constants.fmsUrl}}",
+					"headers": {
+						"Content-type": "undefined"
+					},
+					"data": "{{data.formData}}"
+				}
+			},
+			"events": {
+				"success": [{
+					"name": "ShowCreateDocument.commitFile"
+				}],
+				"failure": [{
+					"name": "ShowCreateDocument.commitFailed"
+				}]
+			}
+		},
+		"commitDatasetFiles": {
+			"actionType": "TcSoaService",
+			"serviceName": "Core-2006-03-FileManagement",
+			"method": "commitDatasetFiles",
+			"inputData": {
+				"commitInput": [{
+					"dataset": "{{data.commitInfo.dataset}}",
+					"createNewVersion": true,
+					"datasetFileTicketInfos": [{
+						"datasetFileInfo": {
+							"clientId": "{{data.commitInfo.datasetFileTicketInfos[0].datasetFileInfo.clientId}}",
+							"fileName": "{{data.commitInfo.datasetFileTicketInfos[0].datasetFileInfo.fileName}}",
+							"namedReferencedName": "{{data.commitInfo.datasetFileTicketInfos[0].datasetFileInfo.namedReferenceName}}",
+							"isText": "{{data.commitInfo.datasetFileTicketInfos[0].datasetFileInfo.isText}}",
+							"allowReplace": "{{data.commitInfo.datasetFileTicketInfos[0].datasetFileInfo.allowReplace}}"
+						},
+						"ticket": "{{data.commitInfo.datasetFileTicketInfos[0].ticket}}"
+					}]
+				}]
+			},
+			"events": {
+				"success": [{
+					"name": "ShowCreateDocument.commitSuccessful"
+				}],
+				"failure": [{
+					"name": "ShowCreateDocument.commitFailed"
+				}]
+			}
+		},
+		"addObjectToHomeFolder": {
+			"actionType": "JSFunction",
+			"method": "execute",
+			"inputData": {
+				"targetObject": "{{ctx.at4create.homeFolder}}",
+				"sourceObjects": ["{{data.createdObject}}"],
+				"relationType": "contents"
+			},
+			"outputData": {
+				
+			},
+			"events": {
+				"success": [{
+					"name": "cdm.relatedModified",
+					"eventData": {
+						"relatedModified": ["{{ctx.at4create.homeFolder}}"],
+						"createdObjects": ["{{data.createdObject}}"]
+					}
+				},
+				{
+					"name": "ShowCreateDocument.objectAddedToHome"
+				}]
+			},
+			"actionMessages": {
+				"success": [{
+					"message": "createObjectSuccess"
+				}]
+			},
+			"deps": "js/pasteService"
+		},
+		"openEditObject": {
+			"actionType": "JSFunction",
+			"method": "execute",
+			"inputData": {
+				"vmo": "{{data.createdObject}}",
+				"dataCtxNode": "{{ctx.at4create}}",
+				"openInEditMode": true
+			},
+			"outputData": {
+				
+			},
+			"deps": "js/showObjectCommandHandler"
+		}
+	},
+	"onEvent": [{
+		"eventId": "ShowCreateDocument.generateList",
+		"action": "convertToList"
+	},
+	{
+		"eventId": "ShowCreateDocument.generateListForAction",
+		"action": "convertToListForAction"
+	},
+	{
+		"eventId": "ShowCreateDocument.callCreateIRDC",
+		"action": "createObjectIRDC"
+	},
+	{
+		"eventId": "ShowCreateDocument.oldCallCreateIRDC",
+		"action": "oldCreateObjectIRDC"
+	},
+	{
+		"eventId": "ShowCreateDocument.objectCreated",
+		"action": "checkForFileUploads"
+	},
+	{
+		"eventId": "ShowCreateDocument.objectCreationFailed",
+		"action": "createObjectFailed"
+	},
+	{
+		"eventId": "ShowCreateDocument.initNextUpload",
+		"action": "initNextUpload"
+	},
+	{
+		"eventId": "ShowCreateDocument.uploadReady",
+		"action": "uploadReady"
+	},
+	{
+		"eventId": "ShowCreateDocument.uploadFile",
+		"action": "uploadFile"
+	},
+	{
+		"eventId": "ShowCreateDocument.commitFile",
+		"action": "commitDatasetFiles"
+	},
+	{
+		"eventId": "ShowCreateDocument.commitSuccessful",
+		"action": "initNextUpload"
+	},
+	{
+		"eventId": "ShowCreateDocument.commitFailed",
+		"action": "initNextUpload"
+	},
+	{
+		"eventId": "ShowCreateDocument.addToFolder",
+		"action": "addObjectToHomeFolder"
+	},
+	{
+		"eventId": "ShowCreateDocument.objectAddedToHome",
+		"action": "openEditObject"
+	}],
+	"data": {
+		"commands": {
+			"isArray": "true",
+			"dbValue": [{
+				"action": "addFileInput",
+				"iconName": "Add",
+				"tooltip": "{{i18n.addFileBtnTooltip}}"
+			},
+			{
+				"action": "removeFileInput",
+				"iconName": "Remove",
+				"tooltip": "{{i18n.removeFileBtnTooltip}}"
+			}]
+		},
+		"allowAlternateProcedures": {
+			"displayName": "",
+			"type": "BOOLEAN",
+			"isRequired": "true",
+			"propertyRadioTrueText": "{{i18n.allRadioBtn}}",
+			"propertyRadioFalseText": "{{i18n.assignedRadioBtn}}"
+		},
+		"isAllowAlternateProcedures": {
+			"displayName": "",
+			"type": "BOOLEAN",
+			"dbValue": true
+		},
+		"workflowTemplates": {
+			"type": "STRING",
+			"hasLov": true
+		}
+	},
+	"messages": {
+		"createObjectSuccess": {
+			"messageType": "INFO",
+			"messageText": "{{i18n.pasteSuccessful}}",
+			"messageTextParams": ["{{data.createdObject.props.object_string.dbValues[0]}}"]
+		},
+		"failureToAttachFiles": {
+			"messageType": "INFO",
+			"messageText": "{{i18n.failureToAttachFiles}}"
+		}
+	},
+	"preferences": ["CR_allow_alternate_procedures"],
+	"functions": {
+		"isFetchFilteredTemplates": {
+			"functionName": "isFetchFilteredTemplates",
+			"parameters": ["{{data}}"]
+		},
+		"getFiltered": {
+			"functionName": "getFiltered",
+			"parameters": ["{{data.allowAlternateProcedures.dbValue}}"]
+		},
+		"getCreateInput": {
+			"functionName": "getCreateInput",
+			"parameters": ["{{data}}"]
+		}
+	},
+	"conditions": {
+		"isAllowAlternateProcedures": {
+			"expression": "data.isAllowAlternateProcedures.dbValue"
+		},
+		"showSubmitBtn": {
+			"expression": "data.workflowTemplates.dbValue!='No Template Available' && data.workflowTemplates.dbValue!=''"
+		}
+	},
+	"i18n": {
+		"createDocTitle": ["at4CreateMessages"],
+		"fileAttachTitle": ["at4CreateMessages"],
+		"addFileBtnTooltip": ["at4CreateMessages"],
+		"removeFileBtnTooltip": ["at4CreateMessages"],
+		"workflowTitle": ["at4CreateMessages"],
+		"allRadioBtn": ["at4CreateMessages"],
+		"assignedRadioBtn": ["at4CreateMessages"],
+		"createBtn": ["at4CreateMessages"],
+		"submitBtn": ["at4CreateMessages"],
+		"failureToAttachFiles": ["at4CreateMessages"],
+		"pasteSuccessful": ["at4CreateMessages"]
+	}
+}

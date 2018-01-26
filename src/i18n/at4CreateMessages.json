@@ -1,0 +1,15 @@
+{
+	"cmdAT4CreateTitle" : "AT4 Create Object",
+	"type": "Type",
+	"createDocTitle": "Create",
+	"fileAttachTitle": "File Attachments",
+	"addFileBtnTooltip": "Add File",
+	"removeFileBtnTooltip": "Remove File",
+	"workflowTitle": "Workflow",
+	"allRadioBtn": "All",
+	"assignedRadioBtn": "Assigned",
+	"createBtn": "Create",
+	"submitBtn": "Submit",
+	"failureToAttachFiles": "Failure in attaching at least one file to the object",
+	"pasteSuccessful": "\"{0}\" was added to Home."
+}

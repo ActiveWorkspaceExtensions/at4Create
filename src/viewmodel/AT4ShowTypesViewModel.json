@@ -1,0 +1,44 @@
+{
+	"schemaVersion": "1.0.0",
+	"imports": ["js/aw-panel-body.directive",
+	"js/aw-type-selector.directive",
+	"js/aw-panel-section.directive"
+	],
+	"actions": {
+		"createStyleSheetAction": {
+			"actionType": "JSFunction",
+			"method": "createStyleSheet",
+			"inputData": {
+				"data": "{{data}}"
+			},
+			"deps": "js/at4Create"
+		}
+	},
+	"functions": {
+		"createStyleSheet": {
+			"functionName": "createStyleSheet",
+			"parameters": []
+		}
+	},
+	"onEvent": [{
+		"eventId": "awPanel.reveal",
+		"criteria": {
+			"panelId": "cmdAT4Create"
+		}
+	},
+	{
+		"eventId": "awTypeSelector.selectionChangeEvent",
+		"action": "createStyleSheetAction"
+	}],
+	"data": {
+		"filterBox": {
+			"displayName": "Filter",
+			"type": "STRING",
+			"dbValue": ""
+		}
+	},
+	"i18n": {
+		"type": ["at4CreateMessages"],
+		"cmdAT4CreateTitle": ["at4CreateMessages"]
+	}
+}

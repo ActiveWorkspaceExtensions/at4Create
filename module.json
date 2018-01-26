@@ -1,0 +1,56 @@
+{
+    "name": "at4Create",
+    "desc": "AT4 Part Creation Process",
+    "type": [
+        "native"
+    ],
+    "skipTest": true,
+	
+		"commandsViewModel": {
+		"commands": {
+			"cmdAT4Create": {
+				"iconId": "cmdAddPart",
+				"title": "{{i18n.cmdAT4CreateTitle}}"
+			}
+		},
+		"commandPlacements": {
+			"cmdAT4Create_tools": {
+				"id": "cmdAT4Create",
+				"uiAnchor": "aw_toolsAndInfo",
+				"priority": 100
+			}
+		},
+		"commandHandlers": {
+			"cmdAT4CreateHandler": {
+				"id": "cmdAT4Create",
+				"action": "activatecmdAT4Create",
+				"activeWhen": true,
+				 "visibleWhen": {
+				    "condition": "conditions.inHomeFolder"
+				 }
+			}
+		},
+		"actions": {
+			"activatecmdAT4Create": {
+				"actionType": "JSFunction",
+				"method": "activateCommandPanel",
+				"deps": "js/commandPanel.service",
+				"inputData": {
+					"commandId":"cmdAT4Create",
+					"location" : "aw_toolsAndInfo"
+				}
+			}
+		},
+		"conditions": {
+			"objectIsSelected": {
+				"expression": "ctx.selected"
+			},
+			"inHomeFolder" : {
+				"expression" : "ctx.locationContext.modelObject.type === 'Fnd0HomeFolder' "
+			}
+		},
+		"i18n": {
+			"cmdAT4CreateTitle":["at4CreateMessages"]
+		}
+	}
+}
